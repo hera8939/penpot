@@ -123,13 +123,15 @@ pub extern "C" fn set_browser(browser: u8) -> Result<()> {
 #[no_mangle]
 #[wasm_error]
 pub extern "C" fn clean_up() -> Result<()> {
-    with_state_mut!(state, {
-        // Cancel the current animation frame if it exists so
-        // it won't try to render without context
-        let render_state = state.render_state_mut();
-        render_state.cancel_animation_frame();
-    });
-    unsafe { STATE = None }
+    unsafe {
+        #[allow(static_mut_refs)]
+        if let Some(state) = STATE.as_mut() {
+            // Cancel the current animation frame if it exists so
+            // it won't try to render without context.
+            state.render_state_mut().cancel_animation_frame();
+        }
+        STATE = None;
+    }
     mem::free_bytes()?;
     Ok(())
 }
