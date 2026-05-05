@@ -3781,10 +3781,17 @@ impl RenderState {
     pub fn print_stats(&self) {
         self.stats.print();
     }
-}
 
-impl Drop for RenderState {
-    fn drop(&mut self) {
+    pub fn prepare_context_loss_cleanup(&mut self) {
+        // Drop cached GPU-backed snapshots before dropping the render state.
+        self.backbuffer_crop_cache.clear();
+        self.surfaces.invalidate_tile_cache();
+        // Mark context as abandoned so resource destructors avoid issuing
+        // GL commands when the browser has already lost/restored the context.
+        self.gpu_state.context.abandon();
+    }
+
+    pub fn free_gpu_resources(&mut self) {
         self.gpu_state.context.free_gpu_resources();
     }
 }

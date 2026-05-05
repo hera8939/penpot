@@ -128,7 +128,9 @@ pub extern "C" fn clean_up() -> Result<()> {
         if let Some(state) = STATE.as_mut() {
             // Cancel the current animation frame if it exists so
             // it won't try to render without context.
-            state.render_state_mut().cancel_animation_frame();
+            let render_state = state.render_state_mut();
+            render_state.cancel_animation_frame();
+            render_state.prepare_context_loss_cleanup();
         }
         STATE = None;
     }
@@ -1055,6 +1057,13 @@ pub extern "C" fn render_shape_pixels(
 pub extern "C" fn render_stats() {
     with_state!(state, {
         state.render_state.print_stats();
+    })
+}
+
+#[no_mangle]
+pub fn free_gpu_resources() {
+    with_state_mut!(state, {
+        state.render_state.free_gpu_resources();
     })
 }
 
