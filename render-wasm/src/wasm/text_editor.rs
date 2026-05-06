@@ -1,6 +1,5 @@
 use macros::{wasm_error, ToJs};
 
-use crate::get_text_editor_state;
 use crate::math::{Matrix, Point, Rect};
 use crate::render::text_editor as text_editor_render;
 use crate::render::SurfaceId;
@@ -12,8 +11,9 @@ use crate::wasm::fills::RawFillData;
 use crate::wasm::text::{
     helpers as text_helpers, RawTextAlign, RawTextDecoration, RawTextDirection, RawTextTransform,
 };
-use crate::{get_render_state, mem};
-use crate::{with_state, with_state_mut, STATE};
+use crate::mem;
+use crate::globals::{get_render_state, get_text_editor_state};
+use crate::{with_state, with_state_mut};
 use skia_safe::Color;
 
 #[derive(PartialEq, ToJs)]
@@ -886,7 +886,7 @@ pub extern "C" fn text_editor_render_overlay() {
             canvas,
             &viewbox,
             &get_render_state().options,
-            &state.text_editor_state,
+            &get_text_editor_state(),
             shape,
         );
         get_render_state().flush_and_submit();
