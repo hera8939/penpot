@@ -21,6 +21,7 @@ use crate::error::{Error, Result};
 use macros::wasm_error;
 use math::{Bounds, Matrix};
 use mem::SerializableResult;
+use render::gpu_state::GpuState;
 use shapes::{StructureEntry, StructureEntryType, TransformEntry};
 use skia_safe as skia;
 use state::State;
@@ -28,6 +29,16 @@ use utils::uuid_from_u32_quartet;
 use uuid::Uuid;
 
 pub(crate) static mut STATE: Option<Box<State>> = None;
+
+static mut GPU_STATE: *mut GpuState = std::ptr::null_mut();
+
+#[inline(always)]
+pub fn get_gpu_state() -> &'static mut GpuState {
+    unsafe {
+        debug_assert!(!GPU_STATE.is_null(), "GPU State is null");
+        &mut *GPU_STATE
+    }
+}
 
 // FIXME: These with_state* macros should be using our CriticalError instead of expect.
 // But to do that, we need to not use them at domain-level (i.e. in business logic), just
@@ -101,11 +112,21 @@ macro_rules! with_state_mut_current_shape {
     };
 }
 
+/// Initializes GPU.
+fn gpu_init() {
+    unsafe {
+        let gpu_state = GpuState::try_new()
+            .expect("Cannot initialize GPU State");
+        GPU_STATE = Box::into_raw(Box::new(gpu_state));
+    }
+}
+
 #[no_mangle]
 #[wasm_error]
 pub extern "C" fn init(width: i32, height: i32) -> Result<()> {
-    let state_box = Box::new(State::try_new(width, height)?);
+    gpu_init();
     unsafe {
+        let state_box = Box::new(State::try_new(width, height)?);
         STATE = Some(state_box);
     }
     Ok(())
