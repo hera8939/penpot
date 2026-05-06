@@ -899,7 +899,7 @@ pub extern "C" fn start_temp_objects() {
         let mut state = STATE.take().ok_or(Error::CriticalError(
             "Got an invalid state pointer".to_string(),
         ));
-        state = Box::new(state.start_temp_objects()?);
+        state = Box::new(state.start_temp_objects());
         STATE = Some(state);
     }
 }
