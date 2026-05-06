@@ -1,7 +1,6 @@
 use macros::{wasm_error, ToJs};
 
 use crate::math::{Matrix, Point, Rect};
-use crate::mem;
 use crate::render::text_editor as text_editor_render;
 use crate::render::SurfaceId;
 use crate::shapes::{Shape, TextAlign, TextContent, TextPositionWithAffinity, Type, VerticalAlign};
@@ -12,6 +11,7 @@ use crate::wasm::fills::RawFillData;
 use crate::wasm::text::{
     helpers as text_helpers, RawTextAlign, RawTextDecoration, RawTextDirection, RawTextTransform,
 };
+use crate::{get_render_state, mem};
 use crate::{with_state, with_state_mut, STATE};
 use skia_safe::Color;
 
@@ -302,7 +302,7 @@ pub extern "C" fn text_editor_set_cursor_from_point(x: f32, y: f32) {
             return;
         }
 
-        let view_matrix: Matrix = state.render_state.viewbox.get_matrix();
+        let view_matrix: Matrix = get_render_state().viewbox.get_matrix();
         let point = Point::new(x, y);
         let Some(shape_id) = state.text_editor_state.active_shape_id else {
             return;
@@ -391,7 +391,7 @@ pub extern "C" fn text_editor_composition_end() -> Result<()> {
             .text_editor_state
             .push_event(crate::state::TextEditorEvent::NeedsLayout);
 
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
 
         state.text_editor_state.composition.end();
     });
@@ -448,7 +448,7 @@ pub extern "C" fn text_editor_composition_update() -> Result<()> {
             .text_editor_state
             .push_event(crate::state::TextEditorEvent::NeedsLayout);
 
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
     });
 
     crate::mem::free_bytes()?;
@@ -523,7 +523,7 @@ pub extern "C" fn text_editor_insert_text() -> Result<()> {
             .text_editor_state
             .push_event(TextEditorEvent::NeedsLayout);
 
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
     });
 
     crate::mem::free_bytes()?;
@@ -552,7 +552,7 @@ pub extern "C" fn text_editor_delete_backward(word_boundary: bool) {
         state
             .text_editor_state
             .delete_backward(text_content, word_boundary);
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
     });
 }
 
@@ -578,7 +578,7 @@ pub extern "C" fn text_editor_delete_forward(word_boundary: bool) {
         state
             .text_editor_state
             .delete_forward(text_content, word_boundary);
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
     });
 }
 
@@ -602,7 +602,7 @@ pub extern "C" fn text_editor_insert_paragraph() {
         };
 
         state.text_editor_state.insert_paragraph(text_content);
-        state.render_state.mark_touched(shape_id);
+        get_render_state().mark_touched(shape_id);
     });
 }
 
@@ -920,16 +920,16 @@ pub extern "C" fn text_editor_render_overlay() {
             return;
         };
 
-        let canvas = state.render_state.surfaces.canvas(SurfaceId::Target);
-        let viewbox = state.render_state.viewbox;
+        let canvas = get_render_state().surfaces.canvas(SurfaceId::Target);
+        let viewbox = get_render_state().viewbox;
         text_editor_render::render_overlay(
             canvas,
             &viewbox,
-            &state.render_state.options,
+            &get_render_state().options,
             &state.text_editor_state,
             shape,
         );
-        state.render_state.flush_and_submit();
+        get_render_state().flush_and_submit();
     });
 }
 
