@@ -322,12 +322,11 @@ pub extern "C" fn text_editor_composition_start() -> Result<()> {
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn text_editor_composition_end() -> Result<()> {
+pub extern "C" fn text_editor_composition_end() {
     let bytes = crate::mem::bytes();
     let text = match String::from_utf8(bytes) {
         Ok(text) => text,
-        Err(_) => return Ok(()),
+        Err(_) => return,
     };
 
     with_state_mut!(state, {
@@ -340,11 +339,11 @@ pub extern "C" fn text_editor_composition_end() -> Result<()> {
         };
 
         let Some(shape) = state.shapes.get_mut(&shape_id) else {
-            return Ok(());
+            return;
         };
 
         let Type::Text(text_content) = &mut shape.shape_type else {
-            return Ok(());
+            return;
         };
 
         get_text_editor_state().composition.update(&text);
@@ -373,17 +372,15 @@ pub extern "C" fn text_editor_composition_end() -> Result<()> {
         get_text_editor_state().composition.end();
     });
 
-    crate::mem::free_bytes()?;
-    Ok(())
+    crate::mem::free_bytes();
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn text_editor_composition_update() -> Result<()> {
+pub extern "C" fn text_editor_composition_update() {
     let bytes = crate::mem::bytes();
     let text = match String::from_utf8(bytes) {
         Ok(text) => text,
-        Err(_) => return Ok(()),
+        Err(_) => return,
     };
 
     with_state_mut!(state, {
@@ -396,11 +393,11 @@ pub extern "C" fn text_editor_composition_update() -> Result<()> {
         };
 
         let Some(shape) = state.shapes.get_mut(&shape_id) else {
-            return Ok(());
+            return;
         };
 
         let Type::Text(text_content) = &mut shape.shape_type else {
-            return Ok(());
+            return;
         };
 
         get_text_editor_state().composition.update(&text);
@@ -423,8 +420,7 @@ pub extern "C" fn text_editor_composition_update() -> Result<()> {
         state.render_state.mark_touched(shape_id);
     });
 
-    crate::mem::free_bytes()?;
-    Ok(())
+    crate::mem::free_bytes();
 }
 
 #[no_mangle]
@@ -436,12 +432,11 @@ pub extern "C" fn text_editor_toggle_overtype_mode() -> Result<()> {
 
 // FIXME: Review if all the return Ok(()) should be Err instead.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn text_editor_insert_text() -> Result<()> {
+pub extern "C" fn text_editor_insert_text() {
     let bytes = crate::mem::bytes();
     let text = match String::from_utf8(bytes) {
         Ok(text) => text,
-        Err(_) => return Ok(()),
+        Err(_) => return,
     };
 
     with_state_mut!(state, {
@@ -454,11 +449,11 @@ pub extern "C" fn text_editor_insert_text() -> Result<()> {
         };
 
         let Some(shape) = state.shapes.get_mut(&shape_id) else {
-            return Ok(());
+            return;
         };
 
         let Type::Text(text_content) = &mut shape.shape_type else {
-            return Ok(());
+            return;
         };
 
         let selection = get_text_editor_state().selection;
@@ -492,8 +487,7 @@ pub extern "C" fn text_editor_insert_text() -> Result<()> {
         state.render_state.mark_touched(shape_id);
     });
 
-    crate::mem::free_bytes()?;
-    Ok(())
+    crate::mem::free_bytes();
 }
 
 #[no_mangle]

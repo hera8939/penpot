@@ -29,7 +29,7 @@ pub fn wasm_error(_attr: TokenStream, item: TokenStream) -> TokenStream {
         ReturnType::Default => {
             return quote! {
                 compile_error!(
-                    "#[wasm_error] requires the function to return std::result::Result<T, E> where E: std::error::Error + Into<u8>"
+                    " requires the function to return std::result::Result<T, E> where E: std::error::Error + Into<u8>"
                 );
             }
             .into();
@@ -41,7 +41,7 @@ pub fn wasm_error(_attr: TokenStream, item: TokenStream) -> TokenStream {
         None => {
             return quote! {
                     compile_error!(
-                        "#[wasm_error] requires the function to return crate::error::Result<T>. T must be a C ABI type (u32, u8, bool, (), etc.)"
+                        " requires the function to return crate::error::Result<T>. T must be a C ABI type (u32, u8, bool, (), etc.)"
                     );
                 }
                 .into();

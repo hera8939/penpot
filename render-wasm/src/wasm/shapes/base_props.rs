@@ -110,7 +110,7 @@ impl From<[u8; RAW_BASE_PROPS_SIZE]> for RawBasePropsData {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_shape_base_props() -> Result<()> {
     let bytes = mem::bytes();
 

@@ -289,7 +289,7 @@ pub extern "C" fn clear_shape_text() {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_shape_text_content() -> crate::error::Result<()> {
     let bytes = mem::bytes();
     let raw_text_data = RawParagraph::try_from(&bytes)
@@ -304,7 +304,7 @@ pub extern "C" fn set_shape_text_content() -> crate::error::Result<()> {
         })?;
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 

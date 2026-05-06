@@ -155,7 +155,7 @@ fn get_path_upload_buffer() -> &'static Mutex<Vec<u8>> {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn start_shape_path_buffer() -> Result<()> {
     let buffer = get_path_upload_buffer();
     let mut buffer = buffer
@@ -166,7 +166,7 @@ pub extern "C" fn start_shape_path_buffer() -> Result<()> {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_shape_path_chunk_buffer() -> Result<()> {
     let bytes = mem::bytes();
     let buffer = get_path_upload_buffer();
@@ -174,12 +174,12 @@ pub extern "C" fn set_shape_path_chunk_buffer() -> Result<()> {
         .lock()
         .map_err(|_| Error::CriticalError("Failed to lock path buffer".to_string()))?;
     buffer.extend_from_slice(&bytes);
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_shape_path_buffer() -> Result<()> {
     let buffer = get_path_upload_buffer();
     let mut buffer = buffer

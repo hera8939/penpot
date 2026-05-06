@@ -3,7 +3,7 @@ use thiserror::Error;
 pub const RECOVERABLE_ERROR: u8 = 0x01;
 pub const CRITICAL_ERROR: u8 = 0x02;
 
-// This is not really dead code, #[wasm_error] macro replaces this by something else.
+// This is not really dead code,  macro replaces this by something else.
 #[allow(dead_code)]
 pub type Result<T> = std::result::Result<T, Error>;
 

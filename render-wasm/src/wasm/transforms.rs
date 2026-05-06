@@ -75,7 +75,7 @@ impl From<RawTransformEntry> for TransformEntry {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn propagate_modifiers(pixel_precision: bool) -> Result<*mut u8> {
     let bytes = mem::bytes();
 

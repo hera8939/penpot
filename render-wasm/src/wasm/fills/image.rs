@@ -90,7 +90,7 @@ impl TryFrom<Vec<u8>> for ShapeImageIds {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn store_image() -> Result<()> {
     let bytes = mem::bytes();
     let ids = ShapeImageIds::try_from(bytes[0..IMAGE_IDS_SIZE].to_vec())?;
@@ -116,7 +116,7 @@ pub extern "C" fn store_image() -> Result<()> {
         touch_shapes_with_image(state, ids.image_id);
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 
@@ -129,7 +129,7 @@ pub extern "C" fn store_image() -> Result<()> {
 /// - bytes 40-43: width (i32)
 /// - bytes 44-47: height (i32)
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn store_image_from_texture() -> Result<()> {
     let bytes = mem::bytes();
 
@@ -137,7 +137,7 @@ pub extern "C" fn store_image_from_texture() -> Result<()> {
     if bytes.len() < 48 {
         // FIXME: Review if this should be an critical or a recoverable error.
         eprintln!("store_image_from_texture: insufficient data");
-        mem::free_bytes()?;
+        mem::free_bytes();
         return Err(Error::RecoverableError(
             "store_image_from_texture: insufficient data".to_string(),
         ));
@@ -193,6 +193,6 @@ pub extern "C" fn store_image_from_texture() -> Result<()> {
         touch_shapes_with_image(state, ids.image_id);
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }

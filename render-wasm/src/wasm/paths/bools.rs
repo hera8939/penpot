@@ -46,7 +46,7 @@ pub extern "C" fn set_shape_bool_type(raw_bool_type: u8) {
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn calculate_bool(raw_bool_type: u8) -> Result<*mut u8> {
     let bytes = mem::bytes_or_empty();
 
@@ -58,7 +58,7 @@ pub extern "C" fn calculate_bool(raw_bool_type: u8) -> Result<*mut u8> {
         })
         .collect::<Result<Vec<Uuid>>>()?;
 
-    mem::free_bytes()?;
+    mem::free_bytes();
 
     let bool_type = RawBoolType::from(raw_bool_type).into();
     let result;

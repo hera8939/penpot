@@ -30,7 +30,6 @@ impl From<RawFontStyle> for FontStyle {
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn store_font(
     a: u32,
     b: u32,
@@ -40,7 +39,7 @@ pub extern "C" fn store_font(
     style: u8,
     is_emoji: bool,
     is_fallback: bool,
-) -> Result<()> {
+) {
     with_state_mut!(state, {
         let id = uuid_from_u32_quartet(a, b, c, d);
         let font_bytes = mem::bytes();
@@ -53,9 +52,8 @@ pub extern "C" fn store_font(
                 .fonts_mut()
                 .add(family, &font_bytes, is_emoji, is_fallback);
 
-        mem::free_bytes()?;
+        mem::free_bytes();
     });
-    Ok(())
 }
 
 #[no_mangle]

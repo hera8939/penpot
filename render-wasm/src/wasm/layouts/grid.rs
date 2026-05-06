@@ -171,7 +171,7 @@ pub extern "C" fn set_grid_layout_data(
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_grid_columns() -> Result<()> {
     let bytes = mem::bytes();
 
@@ -189,12 +189,12 @@ pub extern "C" fn set_grid_columns() -> Result<()> {
         shape.set_grid_columns(entries);
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_grid_rows() -> Result<()> {
     let bytes = mem::bytes();
 
@@ -212,12 +212,12 @@ pub extern "C" fn set_grid_rows() -> Result<()> {
         shape.set_grid_rows(entries);
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
+
 pub extern "C" fn set_grid_cells() -> Result<()> {
     let bytes = mem::bytes();
 
@@ -235,7 +235,7 @@ pub extern "C" fn set_grid_cells() -> Result<()> {
         shape.set_grid_cells(cells.into_iter().map(|raw| raw.into()).collect());
     });
 
-    mem::free_bytes()?;
+    mem::free_bytes();
     Ok(())
 }
 

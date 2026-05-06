@@ -1,76 +1,83 @@
-use std::sync::Mutex;
-
-use crate::error::{Error, Result, CRITICAL_ERROR};
+use std::alloc::{alloc, Layout};
 
 pub const LAYOUT_ALIGN: usize = 4;
 
-pub static BUFFERU8: Mutex<Option<Vec<u8>>> = Mutex::new(None);
-pub static BUFFER_ERROR: Mutex<u8> = Mutex::new(0x00);
+// Estado global directo - MÁXIMA VELOCIDAD
+static mut BUFFERU8: Vec<u8> = Vec::new();
+static mut BUFFER_ERROR: u8 = 0;
 
+pub fn alloc_bytes(len: usize) -> *mut u8  {
+    unsafe {
+        let layout = Layout::from_size_align_unchecked(len, LAYOUT_ALIGN);
+        let ptr = alloc(layout);
+        if ptr.is_null() {
+            return std::ptr::null_mut();
+        }
+        std::ptr::write_bytes(ptr, 0, len);
+        Vec::from_raw_parts(ptr, len, len);
+    }
+    std::ptr::null_mut()
+}
+
+#[inline(always)]
 pub fn clear_error_code() {
-    let mut guard = BUFFER_ERROR.lock().unwrap();
-    *guard = 0x00;
+    unsafe {
+        BUFFER_ERROR = 0;
+    }
 }
 
-/// Sets the error buffer from a byte. Used by #[wasm_error] when E: Into<u8>.
+#[inline(always)]
 pub fn set_error_code(code: u8) {
-    let mut guard = BUFFER_ERROR.lock().unwrap();
-    *guard = code;
+    unsafe {
+        BUFFER_ERROR = code;
+    }
 }
 
-#[no_mangle]
-pub extern "C" fn read_error_code() -> u8 {
-    if let Ok(guard) = BUFFER_ERROR.lock() {
-        *guard
-    } else {
-        CRITICAL_ERROR
+#[inline(always)]
+pub fn read_error_code() -> u8 {
+    unsafe  {
+        BUFFER_ERROR
     }
 }
 
 pub fn write_bytes(mut bytes: Vec<u8>) -> *mut u8 {
-    let mut guard = BUFFERU8.lock().unwrap();
-
-    if guard.is_some() {
-        panic!("Bytes already allocated");
-    }
-
     let ptr = bytes.as_mut_ptr();
-
-    *guard = Some(bytes);
+    unsafe {
+        BUFFERU8 = bytes;
+    }
     ptr
 }
 
 pub fn bytes() -> Vec<u8> {
-    let mut guard = BUFFERU8.lock().unwrap();
-    guard.take().expect("Buffer is not initialized")
+    unsafe {
+        std::mem::take(&mut BUFFERU8)
+    }
 }
 
 pub fn bytes_or_empty() -> Vec<u8> {
-    let mut guard = BUFFERU8.lock().unwrap();
-    guard.take().unwrap_or_default()
+    unsafe {
+        if BUFFERU8.is_empty() {
+            Vec::new()
+        } else {
+            std::mem::take(&mut BUFFERU8)
+        }
+    }
 }
 
-pub fn free_bytes() -> Result<()> {
-    let mut guard = BUFFERU8
-        .lock()
-        .map_err(|_| Error::CriticalError("Failed to lock buffer".to_string()))?;
-    *guard = None;
-    std::mem::drop(guard);
-    Ok(())
+pub fn free_bytes() {
+    unsafe {
+        BUFFERU8 = Vec::new();
+    }
 }
 
+// Para el trait SerializableResult
 pub trait SerializableResult: From<Self::BytesType> + Into<Self::BytesType> {
     type BytesType;
     fn clone_to_slice(&self, slice: &mut [u8]);
 }
 
-/*
-  Returns an array in the heap. The first 4 bytes is always the size
-  of the array. Then the items are serialized one after the other
-  by the implementation of SerializableResult trait
-*/
 pub fn write_vec<T: SerializableResult>(result: Vec<T>) -> *mut u8 {
-    let elem_size = size_of::<T::BytesType>();
+    let elem_size = std::mem::size_of::<T::BytesType>();
     let bytes_len = 4 + result.len() * elem_size;
     let mut result_bytes = vec![0; bytes_len];
 

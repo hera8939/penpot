@@ -112,28 +112,23 @@ macro_rules! with_state_mut_current_shape {
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn init(width: i32, height: i32) -> Result<()> {
+pub extern "C" fn init(width: i32, height: i32) {
     let state_box = Box::new(State::try_new(width, height)?);
     unsafe {
         STATE = Some(state_box);
         TEXT_EDITOR_STATE = Box::into_raw(Box::new(TextEditorState::new()));
     }
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_browser(browser: u8) -> Result<()> {
+pub extern "C" fn set_browser(browser: u8) {
     with_state_mut!(state, {
         state.set_browser(browser);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn clean_up() -> Result<()> {
+pub extern "C" fn clean_up() {
     with_state_mut!(state, {
         // Cancel the current animation frame if it exists so
         // it won't try to render without context
@@ -141,99 +136,81 @@ pub extern "C" fn clean_up() -> Result<()> {
         render_state.cancel_animation_frame();
     });
     unsafe { STATE = None }
-    mem::free_bytes()?;
-    Ok(())
+    mem::free_bytes();
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_render_options(debug: u32, dpr: f32) -> Result<()> {
+pub extern "C" fn set_render_options(debug: u32, dpr: f32) {
     with_state_mut!(state, {
         let render_state = state.render_state_mut();
         render_state.set_debug_flags(debug);
         render_state.set_dpr(dpr)?;
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_viewport_interest_area_threshold(
     viewport_interest_area_threshold: i32,
-) -> Result<()> {
+) {
     with_state_mut!(state, {
         let render_state = state.render_state_mut();
         render_state.set_viewport_interest_area_threshold(viewport_interest_area_threshold);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_max_blocking_time_ms(max_blocking_time_ms: i32) -> Result<()> {
+pub extern "C" fn set_max_blocking_time_ms(max_blocking_time_ms: i32) {
     with_state_mut!(state, {
         let render_state = state.render_state_mut();
         render_state.set_max_blocking_time_ms(max_blocking_time_ms);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_node_batch_threshold(node_batch_threshold: i32) -> Result<()> {
+pub extern "C" fn set_node_batch_threshold(node_batch_threshold: i32) {
     with_state_mut!(state, {
         let render_state = state.render_state_mut();
         render_state.set_node_batch_threshold(node_batch_threshold);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_blur_downscale_threshold(blur_downscale_threshold: f32) -> Result<()> {
+pub extern "C" fn set_blur_downscale_threshold(blur_downscale_threshold: f32) {
     with_state_mut!(state, {
         let render_state = state.render_state_mut();
         render_state.set_blur_downscale_threshold(blur_downscale_threshold);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_antialias_threshold(threshold: f32) -> Result<()> {
+pub extern "C" fn set_antialias_threshold(threshold: f32) {
     with_state_mut!(state, {
         state.render_state_mut().set_antialias_threshold(threshold);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_max_atlas_texture_size(max_px: i32) -> Result<()> {
+pub extern "C" fn set_max_atlas_texture_size(max_px: i32) {
     with_state_mut!(state, {
         state
             .render_state_mut()
             .surfaces
             .set_max_atlas_texture_size(max_px);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_canvas_background(raw_color: u32) -> Result<()> {
+pub extern "C" fn set_canvas_background(raw_color: u32) {
     with_state_mut!(state, {
         let color = skia::Color::new(raw_color);
         state.set_background_color(color);
         state.rebuild_tiles_shallow();
     });
 
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render(_: i32) -> Result<()> {
+pub extern "C" fn render(_: i32) {
     with_state_mut!(state, {
         state.rebuild_touched_tiles();
         // Drain the throttled modifier-tile invalidation accumulated
@@ -251,24 +228,20 @@ pub extern "C" fn render(_: i32) -> Result<()> {
             .start_render_loop(performance::get_time())
             .map_err(|_| Error::RecoverableError("Error rendering".to_string()))?;
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render_sync() -> Result<()> {
+pub extern "C" fn render_sync() {
     with_state_mut!(state, {
         state.rebuild_tiles();
         state
             .render_sync(performance::get_time())
             .map_err(|_| Error::RecoverableError("Error rendering".to_string()))?;
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render_sync_shape(a: u32, b: u32, c: u32, d: u32) -> Result<()> {
+pub extern "C" fn render_sync_shape(a: u32, b: u32, c: u32, d: u32) {
     with_state_mut!(state, {
         let id = uuid_from_u32_quartet(a, b, c, d);
         state.use_shape(id);
@@ -289,12 +262,10 @@ pub extern "C" fn render_sync_shape(a: u32, b: u32, c: u32, d: u32) -> Result<()
             .render_sync_shape(&id, performance::get_time())
             .map_err(|e| Error::RecoverableError(e.to_string()))?;
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render_from_cache(_: i32) -> Result<()> {
+pub extern "C" fn render_from_cache(_: i32) {
     with_state_mut!(state, {
         // Don't cancel the animation frame — let the async render
         // continue populating the tile HashMap in the background.
@@ -305,46 +276,37 @@ pub extern "C" fn render_from_cache(_: i32) -> Result<()> {
         // render at the new viewport position.
         state.render_from_cache();
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_preview_mode(enabled: bool) -> Result<()> {
+pub extern "C" fn set_preview_mode(enabled: bool) {
     with_state_mut!(state, {
         state.render_state.set_preview_mode(enabled);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render_preview() -> Result<()> {
+pub extern "C" fn render_preview() {
     with_state_mut!(state, {
         state.render_preview(performance::get_time());
     });
-    Ok(())
 }
 
 /// Enter bulk-loading mode. While active, `state.loading` is `true`.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn begin_loading() -> Result<()> {
+pub extern "C" fn begin_loading() {
     with_state_mut!(state, {
         state.loading = true;
     });
-    Ok(())
 }
 
 /// Leave bulk-loading mode. Should be called after the first
 /// render so the loading flag is available during that render.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn end_loading() -> Result<()> {
+pub extern "C" fn end_loading() {
     with_state_mut!(state, {
         state.loading = false;
     });
-    Ok(())
 }
 
 /// Draw a full-screen loading overlay (background + "Loading…" text).
@@ -354,60 +316,49 @@ pub extern "C" fn end_loading() -> Result<()> {
 /// This is currently not being used, but it's set there for testing purposes on
 /// upcoming tasks
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn render_loading_overlay() -> Result<()> {
+pub extern "C" fn render_loading_overlay() {
     with_state_mut!(state, {
         state.render_state.render_loading_overlay();
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn process_animation_frame(timestamp: i32) -> Result<()> {
+pub extern "C" fn process_animation_frame(timestamp: i32) {
     let result = with_state_mut!(state, { state.process_animation_frame(timestamp) });
     if let Err(err) = result {
         eprintln!("process_animation_frame error: {}", err);
     }
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn reset_canvas() -> Result<()> {
+pub extern "C" fn reset_canvas() {
     with_state_mut!(state, {
         state.render_state_mut().reset_canvas();
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn resize_viewbox(width: i32, height: i32) -> Result<()> {
+pub extern "C" fn resize_viewbox(width: i32, height: i32) {
     with_state_mut!(state, {
         state.resize(width, height)?;
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_view(zoom: f32, x: f32, y: f32) -> Result<()> {
+pub extern "C" fn set_view(zoom: f32, x: f32, y: f32) {
     with_state_mut!(state, {
         performance::begin_measure!("set_view");
         let render_state = state.render_state_mut();
         render_state.set_view(zoom, x, y);
         performance::end_measure!("set_view");
     });
-    Ok(())
 }
 
 #[cfg(feature = "profile-macros")]
 static mut VIEW_INTERACTION_START: i32 = 0;
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_view_start() -> Result<()> {
+pub extern "C" fn set_view_start() {
     with_state_mut!(state, {
         #[cfg(feature = "profile-macros")]
         unsafe {
@@ -417,7 +368,6 @@ pub extern "C" fn set_view_start() -> Result<()> {
         state.render_state.options.set_fast_mode(true);
         performance::end_measure!("set_view_start");
     });
-    Ok(())
 }
 
 /// Finishes a view interaction (zoom or pan). Rebuilds the tile index
@@ -426,8 +376,7 @@ pub extern "C" fn set_view_start() -> Result<()> {
 /// For pure pan (same zoom), cached tiles are preserved so only
 /// newly-visible tiles need rendering.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_view_end() -> Result<()> {
+pub extern "C" fn set_view_end() {
     with_state_mut!(state, {
         performance::begin_measure!("set_view_end");
         state.render_state.options.set_fast_mode(false);
@@ -460,7 +409,6 @@ pub extern "C" fn set_view_end() -> Result<()> {
 
         performance::end_measure!("set_view_end");
     });
-    Ok(())
 }
 
 /// Enter interactive transform mode (drag / resize / rotate of a
@@ -469,15 +417,13 @@ pub extern "C" fn set_view_end() -> Result<()> {
 /// presented every rAF, and triggers atlas-backed backdrops so
 /// invalidated tiles do not appear sequentially or flicker.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_modifiers_start() -> Result<()> {
+pub extern "C" fn set_modifiers_start() {
     with_state_mut!(state, {
         performance::begin_measure!("set_modifiers_start");
         state.render_state.options.set_fast_mode(true);
         state.render_state.options.set_interactive_transform(true);
         performance::end_measure!("set_modifiers_start");
     });
-    Ok(())
 }
 
 /// Leave interactive transform mode and cancel any pending async
@@ -485,8 +431,7 @@ pub extern "C" fn set_modifiers_start() -> Result<()> {
 /// a final full-quality render (typically via `_render`) once the
 /// modifiers have been committed.
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_modifiers_end() -> Result<()> {
+pub extern "C" fn set_modifiers_end() {
     with_state_mut!(state, {
         performance::begin_measure!("set_modifiers_end");
         state.render_state.options.set_fast_mode(false);
@@ -494,21 +439,17 @@ pub extern "C" fn set_modifiers_end() -> Result<()> {
         state.render_state.cancel_animation_frame();
         performance::end_measure!("set_modifiers_end");
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn clear_focus_mode() -> Result<()> {
+pub extern "C" fn clear_focus_mode() {
     with_state_mut!(state, {
         state.clear_focus_mode();
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_focus_mode() -> Result<()> {
+pub extern "C" fn set_focus_mode() {
     let bytes = mem::bytes();
 
     let entries: Vec<Uuid> = bytes
@@ -519,86 +460,68 @@ pub extern "C" fn set_focus_mode() -> Result<()> {
     with_state_mut!(state, {
         state.set_focus_mode(entries);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn init_shapes_pool(capacity: usize) -> Result<()> {
+pub extern "C" fn init_shapes_pool(capacity: usize) {
     with_state_mut!(state, {
         state.init_shapes_pool(capacity);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn use_shape(a: u32, b: u32, c: u32, d: u32) -> Result<()> {
+pub extern "C" fn use_shape(a: u32, b: u32, c: u32, d: u32) {
     with_state_mut!(state, {
         let id = uuid_from_u32_quartet(a, b, c, d);
         state.use_shape(id);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn touch_shape(a: u32, b: u32, c: u32, d: u32) -> Result<()> {
+pub extern "C" fn touch_shape(a: u32, b: u32, c: u32, d: u32) {
     with_state_mut!(state, {
         let shape_id = uuid_from_u32_quartet(a, b, c, d);
         state.touch_shape(shape_id);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_parent(a: u32, b: u32, c: u32, d: u32) -> Result<()> {
+pub extern "C" fn set_parent(a: u32, b: u32, c: u32, d: u32) {
     with_state_mut!(state, {
         let id = uuid_from_u32_quartet(a, b, c, d);
         state.set_parent_for_current_shape(id);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_masked_group(masked: bool) -> Result<()> {
+pub extern "C" fn set_shape_masked_group(masked: bool) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_masked(masked);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_selrect(left: f32, top: f32, right: f32, bottom: f32) -> Result<()> {
+pub extern "C" fn set_shape_selrect(left: f32, top: f32, right: f32, bottom: f32) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_selrect(left, top, right, bottom);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_clip_content(clip_content: bool) -> Result<()> {
+pub extern "C" fn set_shape_clip_content(clip_content: bool) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_clip(clip_content);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_rotation(rotation: f32) -> Result<()> {
+pub extern "C" fn set_shape_rotation(rotation: f32) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_rotation(rotation);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_shape_transform(
     a: f32,
     b: f32,
@@ -606,24 +529,21 @@ pub extern "C" fn set_shape_transform(
     d: f32,
     e: f32,
     f: f32,
-) -> Result<()> {
+) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_transform(a, b, c, d, e, f);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn add_shape_child(a: u32, b: u32, c: u32, d: u32) -> Result<()> {
+pub extern "C" fn add_shape_child(a: u32, b: u32, c: u32, d: u32) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         let id = uuid_from_u32_quartet(a, b, c, d);
         shape.add_child(id);
     });
-    Ok(())
 }
 
-fn set_children_set(entries: Vec<Uuid>) -> Result<()> {
+fn set_children_set(entries: Vec<Uuid>) {
     let mut deleted = Vec::new();
     let mut parent_id = None;
 
@@ -652,27 +572,21 @@ fn set_children_set(entries: Vec<Uuid>) -> Result<()> {
             state.touch_shape(id);
         }
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_children_0() -> Result<()> {
+pub extern "C" fn set_children_0() {
     let entries = vec![];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_children_1(a1: u32, b1: u32, c1: u32, d1: u32) -> Result<()> {
+pub extern "C" fn set_children_1(a1: u32, b1: u32, c1: u32, d1: u32) {
     let entries = vec![uuid_from_u32_quartet(a1, b1, c1, d1)];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_children_2(
     a1: u32,
     b1: u32,
@@ -682,17 +596,15 @@ pub extern "C" fn set_children_2(
     b2: u32,
     c2: u32,
     d2: u32,
-) -> Result<()> {
+) {
     let entries = vec![
         uuid_from_u32_quartet(a1, b1, c1, d1),
         uuid_from_u32_quartet(a2, b2, c2, d2),
     ];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_children_3(
     a1: u32,
     b1: u32,
@@ -706,18 +618,16 @@ pub extern "C" fn set_children_3(
     b3: u32,
     c3: u32,
     d3: u32,
-) -> Result<()> {
+) {
     let entries = vec![
         uuid_from_u32_quartet(a1, b1, c1, d1),
         uuid_from_u32_quartet(a2, b2, c2, d2),
         uuid_from_u32_quartet(a3, b3, c3, d3),
     ];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_children_4(
     a1: u32,
     b1: u32,
@@ -735,7 +645,7 @@ pub extern "C" fn set_children_4(
     b4: u32,
     c4: u32,
     d4: u32,
-) -> Result<()> {
+) {
     let entries = vec![
         uuid_from_u32_quartet(a1, b1, c1, d1),
         uuid_from_u32_quartet(a2, b2, c2, d2),
@@ -743,11 +653,9 @@ pub extern "C" fn set_children_4(
         uuid_from_u32_quartet(a4, b4, c4, d4),
     ];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn set_children_5(
     a1: u32,
     b1: u32,
@@ -769,7 +677,7 @@ pub extern "C" fn set_children_5(
     b5: u32,
     c5: u32,
     d5: u32,
-) -> Result<()> {
+) {
     let entries = vec![
         uuid_from_u32_quartet(a1, b1, c1, d1),
         uuid_from_u32_quartet(a2, b2, c2, d2),
@@ -778,12 +686,10 @@ pub extern "C" fn set_children_5(
         uuid_from_u32_quartet(a5, b5, c5, d5),
     ];
     set_children_set(entries)?;
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_children() -> Result<()> {
+pub extern "C" fn set_children() {
     let bytes = mem::bytes_or_empty();
 
     let entries: Vec<Uuid> = bytes
@@ -794,14 +700,12 @@ pub extern "C" fn set_children() -> Result<()> {
     set_children_set(entries)?;
 
     if !bytes.is_empty() {
-        mem::free_bytes()?;
+        mem::free_bytes();
     }
 
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn is_image_cached(
     a: u32,
     b: u32,
@@ -817,8 +721,7 @@ pub extern "C" fn is_image_cached(
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_svg_raw_content() -> Result<()> {
+pub extern "C" fn set_shape_svg_raw_content() {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         let bytes = mem::bytes();
         let svg_raw_content = String::from_utf8(bytes)
@@ -828,38 +731,30 @@ pub extern "C" fn set_shape_svg_raw_content() -> Result<()> {
         shape.set_svg_raw_content(svg_raw_content);
     });
 
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_opacity(opacity: f32) -> Result<()> {
+pub extern "C" fn set_shape_opacity(opacity: f32) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_opacity(opacity);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_hidden(hidden: bool) -> Result<()> {
+pub extern "C" fn set_shape_hidden(hidden: bool) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_hidden(hidden);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_shape_corners(r1: f32, r2: f32, r3: f32, r4: f32) -> Result<()> {
+pub extern "C" fn set_shape_corners(r1: f32, r2: f32, r3: f32, r4: f32) {
     with_current_shape_mut!(state, |shape: &mut Shape| {
         shape.set_corners((r1, r2, r3, r4));
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn get_selection_rect() -> Result<*mut u8> {
     let bytes = mem::bytes();
 
@@ -908,8 +803,7 @@ pub extern "C" fn get_selection_rect() -> Result<*mut u8> {
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_structure_modifiers() -> Result<()> {
+pub extern "C" fn set_structure_modifiers() {
     let bytes = mem::bytes();
 
     let entries: Vec<StructureEntry> = bytes
@@ -954,13 +848,11 @@ pub extern "C" fn set_structure_modifiers() -> Result<()> {
         }
     });
 
-    mem::free_bytes()?;
-    Ok(())
+    mem::free_bytes();
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn clean_modifiers() -> Result<()> {
+pub extern "C" fn clean_modifiers() {
     with_state_mut!(state, {
         let prev_modifier_ids = state.shapes.clean_all();
         // Skip the tile-cache cleanup during interactive transform: the
@@ -973,12 +865,10 @@ pub extern "C" fn clean_modifiers() -> Result<()> {
                 .update_tiles_shapes(&prev_modifier_ids, &mut state.shapes)?;
         }
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn set_modifiers() -> Result<()> {
+pub extern "C" fn set_modifiers() {
     let bytes = mem::bytes();
 
     let entries: Vec<TransformEntry> = bytes
@@ -1000,39 +890,33 @@ pub extern "C" fn set_modifiers() -> Result<()> {
             state.rebuild_modifier_tiles(ids)?;
         }
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn start_temp_objects() -> Result<()> {
+pub extern "C" fn start_temp_objects() {
     unsafe {
         #[allow(static_mut_refs)]
         let mut state = STATE.take().ok_or(Error::CriticalError(
             "Got an invalid state pointer".to_string(),
-        ))?;
+        ));
         state = Box::new(state.start_temp_objects()?);
         STATE = Some(state);
     }
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
-pub extern "C" fn end_temp_objects() -> Result<()> {
+pub extern "C" fn end_temp_objects() {
     unsafe {
         #[allow(static_mut_refs)]
         let mut state = STATE.take().ok_or(Error::CriticalError(
             "Got an invalid state pointer".to_string(),
-        ))?;
+        ));
         state = Box::new(state.end_temp_objects()?);
         STATE = Some(state);
     }
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 pub extern "C" fn render_shape_pixels(
     a: u32,
     b: u32,

@@ -224,41 +224,33 @@ pub fn console_debug_surface_rect(render_state: &mut RenderState, id: SurfaceId,
 }
 
 #[no_mangle]
-#[wasm_error]
 #[cfg(target_arch = "wasm32")]
-pub extern "C" fn debug_cache_console() -> Result<()> {
+pub extern "C" fn debug_cache_console() {
     with_state_mut!(state, {
         console_debug_surface(state.render_state_mut(), SurfaceId::Cache);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 #[cfg(target_arch = "wasm32")]
-pub extern "C" fn debug_cache_base64() -> Result<()> {
+pub extern "C" fn debug_cache_base64() {
     with_state_mut!(state, {
         console_debug_surface_base64(state.render_state_mut(), SurfaceId::Cache);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 #[cfg(target_arch = "wasm32")]
-pub extern "C" fn debug_atlas_console() -> Result<()> {
+pub extern "C" fn debug_atlas_console() {
     with_state_mut!(state, {
         console_debug_surface(state.render_state_mut(), SurfaceId::Atlas);
     });
-    Ok(())
 }
 
 #[no_mangle]
-#[wasm_error]
 #[cfg(target_arch = "wasm32")]
-pub extern "C" fn debug_atlas_base64() -> Result<()> {
+pub extern "C" fn debug_atlas_base64() {
     with_state_mut!(state, {
         console_debug_surface_base64(state.render_state_mut(), SurfaceId::Atlas);
     });
-    Ok(())
 }
