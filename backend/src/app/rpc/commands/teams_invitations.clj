@@ -232,7 +232,7 @@
                             :to email
                             :invited-by (:fullname profile)
                             :team (:name team)
-                            :organization (:organization-name team)
+                            :organization (get-in team [:organization :name])
                             :token itoken
                             :extra-data ptoken}))))
 

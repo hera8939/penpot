@@ -1418,17 +1418,19 @@
         (mf/use-fn
          (mf/deps team)
          (fn []
-           (st/emit! (dnt/remove-team-from-org {:team-id (:id team)
-                                                :organization-id (:organization-id team)
-                                                :organization-name (:organization-name team)}))))
+           (let [org (:organization team)]
+             (st/emit! (dnt/remove-team-from-org {:team-id (:id team)
+                                                  :organization-id (:id org)
+                                                  :organization-name (:name org)})))))
 
         on-remove-team-from-org
         (mf/use-fn
          (mf/deps team)
          (fn []
-           (let [params {:type :confirm
+           (let [org (:organization team)
+                 params {:type :confirm
                          :title (tr "modals.remove-team-org.title")
-                         :message (tr "modals.remove-team-org.text" (:name team) (:organization-name team))
+                         :message (tr "modals.remove-team-org.text" (:name team) (:name org))
                          :hint (tr "modals.remove-team-org.info")
                          :hint-level :default
                          :accept-label (tr "modals.remove-team-org.accept")
@@ -1484,12 +1486,13 @@
          [:div {:class (stl/css :block)}
           [:div {:class (stl/css :block-label)}
            (tr "dashboard.team-organization")]
-          (if (:organization-id team)
-            [:div {:class (stl/css :block-content)}
-             [:div {:class (stl/css :org-block-content)}
-              [:> org-avatar* {:org (dtm/team->organization team) :size "xxxl"}]
-              [:span {:class (stl/css :block-text)}
-               (:organization-name team)]
+          (let [org (:organization team)]
+            (if org
+              [:div {:class (stl/css :block-content)}
+               [:div {:class (stl/css :org-block-content)}
+                [:> org-avatar* {:org (dtm/team->organization team) :size "xxxl"}]
+                [:span {:class (stl/css :block-text)}
+                 (:name org)]
 
               (when (and (:is-owner permissions) (not (:is-default team)))
                 [:*
