@@ -174,9 +174,9 @@
 
              (st/emit!
               (dc/update-colorpicker-color {:image image} true)
-              (ptk/data-event ::ev/event {::ev/name "toggle-image-aspect-ratio"
-                                          ::ev/origin "workspace:colorpicker"
-                                          :checked keep-aspect-ratio?})))))
+              (ev/event {::ev/name "toggle-image-aspect-ratio"
+                         ::ev/origin "workspace:colorpicker"
+                         :checked keep-aspect-ratio?})))))
 
         on-change-tab
         (mf/use-fn #(reset! active-color-tab* %))

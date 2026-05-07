@@ -676,7 +676,7 @@
                                :on-accept delete-fn}))
         do-duplicate #(st/emit!
                        (dw/duplicate-page id)
-                       (ptk/event ::ev/event {::ev/name "duplicate-page"}))
+                       (ev/event {::ev/name "duplicate-page"}))
         do-rename #(st/emit! (dw/start-rename-page-item id))]
 
     [:*

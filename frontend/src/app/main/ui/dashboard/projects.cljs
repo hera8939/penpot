@@ -344,8 +344,8 @@
         (mf/use-fn
          (fn []
            (reset! show-team-hero* false)
-           (st/emit! (ptk/data-event ::ev/event {::ev/name "dont-show-team-up-hero"
-                                                 ::ev/origin "dashboard"}))))]
+           (st/emit! (ev/event {::ev/name "dont-show-team-up-hero"
+                                ::ev/origin "dashboard"}))))]
 
     (mf/with-effect [show-team-hero?]
       (swap! storage/global assoc ::show-team-hero show-team-hero?))

@@ -373,8 +373,8 @@
            (let [params {:file-id file-id
                          :blobs (seq blobs)}]
              (st/emit! (dwm/upload-media-components params)
-                       (ptk/event ::ev/event {::ev/name "add-asset-to-library"
-                                              :asset-type "components"})))))
+                       (ev/event {::ev/name "add-asset-to-library"
+                                  :asset-type "components"})))))
 
         on-duplicate
         (mf/use-fn

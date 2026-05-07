@@ -180,10 +180,10 @@
          (mf/deps color on-asset-click read-only? file-id)
          (fn [event]
            (when-not read-only?
-             (st/emit! (ptk/data-event ::ev/event
-                                       {::ev/name "use-library-color"
-                                        ::ev/origin "sidebar"
-                                        :external-library (not local?)}))
+             (st/emit! (ev/event
+                        {::ev/name "use-library-color"
+                         ::ev/origin "sidebar"
+                         :external-library (not local?)}))
 
              (when-not (on-asset-click event (:id color))
                (st/emit! (dc/apply-color-from-assets file-id color (kbd/alt? event)))))))]
@@ -403,8 +403,8 @@
                  y-position (:top bounds)]
 
              (st/emit! (dw/set-assets-section-open file-id :colors true)
-                       (ptk/event ::ev/event {::ev/name "add-asset-to-library"
-                                              :asset-type "color"})
+                       (ev/event {::ev/name "add-asset-to-library"
+                                  :asset-type "color"})
                        (modal/show :colorpicker
                                    {:x x-position
                                     :y y-position

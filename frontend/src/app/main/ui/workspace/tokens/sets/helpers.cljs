@@ -37,7 +37,7 @@
   [tokens-lib parent-set name]
   (let [name   (ctob/make-child-name parent-set name)
         errors (sm/validation-errors name (cfo/make-token-set-name-schema tokens-lib nil))]
-    (st/emit! (ptk/data-event ::ev/event {::ev/name "create-token-set" :name name})
+    (st/emit! (ev/event {::ev/name "create-token-set" :name name})
               (dwtl/clear-token-set-creation))
     (if (empty? errors)
       (let [token-set (ctob/make-token-set :name name)]

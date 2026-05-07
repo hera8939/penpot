@@ -97,10 +97,10 @@
          (mf/deps typography on-asset-click read-only? local?)
          (fn [event]
            (when-not read-only?
-             (st/emit! (ptk/data-event ::ev/event
-                                       {::ev/name "use-library-typography"
-                                        ::ev/origin "sidebar"
-                                        :external-library (not local?)}))
+             (st/emit! (ev/event
+                        {::ev/name "use-library-typography"
+                         ::ev/origin "sidebar"
+                         :external-library (not local?)}))
              (when-not (on-asset-click event (:id typography))
                (st/emit! (dwt/apply-typography typography file-id))))))]
 

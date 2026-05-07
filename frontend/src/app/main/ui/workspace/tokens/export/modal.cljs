@@ -61,7 +61,7 @@
          (mf/deps tokens-json)
          (fn []
            (when tokens-json
-             (st/emit! (ptk/data-event ::ev/event {::ev/name "export-tokens" :type "single"}))
+             (st/emit! (ev/event {::ev/name "export-tokens" :type "single"}))
              (->> (wapi/create-blob (or tokens-json "{}") "application/json")
                   (dom/trigger-download "tokens.json")))))]
     [:> export-tab* {:is-disabled is-disabled
@@ -88,7 +88,7 @@
         (mf/use-fn
          (mf/deps files)
          (fn []
-           (st/emit! (ptk/data-event ::ev/event {::ev/name "export-tokens" :type "multiple"}))
+           (st/emit! (ev/event {::ev/name "export-tokens" :type "multiple"}))
            (download-tokens-zip! files)))]
     [:> export-tab* {:on-export on-export
                      :is-disabled is-disabled}

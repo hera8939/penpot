@@ -216,7 +216,7 @@
               (fn [plugin]
                 (if plugin
                   (do
-                    (st/emit! (ptk/event ::ev/event {::ev/name "install-plugin" :name (:name plugin) :url plugin-url}))
+                    (st/emit! (ev/event {::ev/name "install-plugin" :name (:name plugin) :url plugin-url}))
                     (open-permissions-dialog plugin))
                   (st/emit! (notif/error (tr "dashboard.plugins.parse-error")))))
               (fn [_]
@@ -245,12 +245,12 @@
                                          (dd/fetch-recent-files team-id)
                                          (dd/fetch-projects team-id)
                                          (dd/clear-selected-files)
-                                         (ptk/event ::ev/event {::ev/name "install-template-from-link-finished"
-                                                                :name template-name
-                                                                :url template-url}))]
+                                         (ev/event {::ev/name "install-template-from-link-finished"
+                                                    :name template-name
+                                                    :url template-url}))]
             (if valid-url?
               (st/emit!
-               (ptk/event ::ev/event {::ev/name "install-template-from-link" :name template-name :url template-url})
+               (ev/event {::ev/name "install-template-from-link" :name template-name :url template-url})
                (modal/show
                 {:type :import
                  :project-id project-id

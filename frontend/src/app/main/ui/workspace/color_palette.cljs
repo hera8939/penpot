@@ -37,10 +37,10 @@
            (st/emit! (mdc/add-recent-color color)
                      (mdc/apply-color-from-palette color (kbd/alt? event))
                      (when (not= selected :recent)
-                       (ptk/data-event ::ev/event
-                                       {::ev/name "use-library-color"
-                                        ::ev/origin "color-palette"
-                                        :external-library (not= selected :file)})))))
+                       (ev/event
+                        {::ev/name "use-library-color"
+                         ::ev/origin "color-palette"
+                         :external-library (not= selected :file)})))))
         title
         (uc/get-color-name color)]
 

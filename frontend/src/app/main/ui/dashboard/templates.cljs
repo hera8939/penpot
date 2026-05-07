@@ -40,10 +40,10 @@
   (letfn [(on-finish []
             (st/emit!
              (dd/fetch-recent-files team-id)
-             (ptk/event ::ev/event {::ev/name "import-template-finish"
-                                    ::ev/origin "dashboard"
-                                    :template (:name template)
-                                    :section section})
+             (ev/event {::ev/name "import-template-finish"
+                        ::ev/origin "dashboard"
+                        :template (:name template)
+                        :section section})
 
              (when-not (some? project-id)
                (dcm/go-to-dashboard-recent
@@ -51,10 +51,10 @@
                 :project-id default-project-id))))]
 
     (st/emit!
-     (ptk/event ::ev/event {::ev/name "import-template-launch"
-                            ::ev/origin "dashboard"
-                            :template (:name template)
-                            :section section})
+     (ev/event {::ev/name "import-template-launch"
+                ::ev/origin "dashboard"
+                :template (:name template)
+                :section section})
 
      (modal/show
       {:type :import
@@ -145,9 +145,9 @@
         (mf/use-fn
          (mf/deps section)
          (fn []
-           (st/emit! (ptk/event ::ev/event {::ev/name "explore-libraries-click"
-                                            ::ev/origin "dashboard"
-                                            :section section}))))
+           (st/emit! (ev/event {::ev/name "explore-libraries-click"
+                                ::ev/origin "dashboard"
+                                :section section}))))
 
         on-key-down
         (mf/use-fn

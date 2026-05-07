@@ -52,7 +52,7 @@
 (defn- show-release-notes
   [event]
   (let [version (:main cf/version)]
-    (st/emit! (ptk/event ::ev/event {::ev/name "show-release-notes" :version version}))
+    (st/emit! (ev/event {::ev/name "show-release-notes" :version version}))
 
     (if (and (kbd/alt? event) (kbd/mod? event))
       (st/emit! (modal/show {:type :onboarding}))

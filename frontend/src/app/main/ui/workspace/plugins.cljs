@@ -128,7 +128,7 @@
                    (reset! fetching-manifest? false)
                    (if plugin
                      (do
-                       (st/emit! (ptk/event ::ev/event {::ev/name "install-plugin" :name (:name plugin) :url plugin-url}))
+                       (st/emit! (ev/event {::ev/name "install-plugin" :name (:name plugin) :url plugin-url}))
                        (modal/show!
                         :plugin-permissions
                         {:plugin plugin
@@ -148,10 +148,10 @@
         handle-open-plugin
         (mf/use-fn
          (fn [manifest]
-           (st/emit! (ptk/event ::ev/event {::ev/name "start-plugin"
-                                            ::ev/origin "workspace:plugins"
-                                            :name (:name manifest)
-                                            :host (:host manifest)}))
+           (st/emit! (ev/event {::ev/name "start-plugin"
+                                ::ev/origin "workspace:plugins"
+                                :name (:name manifest)
+                                :host (:host manifest)}))
            (dp/open-plugin! manifest user-can-edit?)
            (modal/hide!)))
 
@@ -161,9 +161,9 @@
          (fn [plugin-index]
            (let [plugins-list (preg/plugins-list)
                  plugin (nth plugins-list plugin-index)]
-             (st/emit! (ptk/event ::ev/event {::ev/name "remove-plugin"
-                                              :name (:name plugin)
-                                              :host (:host plugin)}))
+             (st/emit! (ev/event {::ev/name "remove-plugin"
+                                  :name (:name plugin)
+                                  :host (:host plugin)}))
              (dp/close-plugin! plugin)
              (preg/remove-plugin! plugin)
              (reset! plugins-state* (preg/plugins-list)))))]
@@ -195,7 +195,7 @@
        (when-not (empty? plugins-state)
          [:> i18n/tr-html*
           {:class (stl/css :discover)
-           :on-click #(st/emit! (ptk/event ::ev/event {::ev/name "open-plugins-list"}))
+           :on-click #(st/emit! (ev/event {::ev/name "open-plugins-list"}))
            :content (tr "workspace.plugins.discover" cfg/plugins-list-uri)}])
 
        [:hr]
@@ -207,7 +207,7 @@
           [:a {:class (stl/css :plugins-link)
                :href cfg/plugins-list-uri
                :target "_blank"
-               :on-click #(st/emit! (ptk/event ::ev/event {::ev/name "open-plugins-list"}))}
+               :on-click #(st/emit! (ev/event {::ev/name "open-plugins-list"}))}
            (tr "workspace.plugins.plugin-list-link") deprecated-icon/external-link]]
 
          [:*
@@ -298,9 +298,9 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "allow-plugin-permissions"
-                                            :host host
-                                            :permissions (->> permissions (str/join ", "))})
+           (st/emit! (ev/event {::ev/name "allow-plugin-permissions"
+                                :host host
+                                :permissions (->> permissions (str/join ", "))})
                      (modal/hide))
            (when on-accept (on-accept))))
 
@@ -308,9 +308,9 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "reject-plugin-permissions"
-                                            :host host
-                                            :permissions (->> permissions (str/join ", "))})
+           (st/emit! (ev/event {::ev/name "reject-plugin-permissions"
+                                :host host
+                                :permissions (->> permissions (str/join ", "))})
                      (modal/hide))
            (when on-close (on-close))))]
 
@@ -353,9 +353,9 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "allow-plugin-permissions"
-                                            :host host
-                                            :permissions (->> permissions (str/join ", "))})
+           (st/emit! (ev/event {::ev/name "allow-plugin-permissions"
+                                :host host
+                                :permissions (->> permissions (str/join ", "))})
                      (modal/hide))
            (when on-accept (on-accept))))
 
@@ -363,9 +363,9 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "reject-plugin-permissions"
-                                            :host host
-                                            :permissions (->> permissions (str/join ", "))})
+           (st/emit! (ev/event {::ev/name "reject-plugin-permissions"
+                                :host host
+                                :permissions (->> permissions (str/join ", "))})
                      (modal/hide))
            (when on-close (on-close))))]
 
@@ -406,7 +406,7 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "try-out-accept"})
+           (st/emit! (ev/event {::ev/name "try-out-accept"})
                      (modal/hide))
            (when on-accept (on-accept))))
 
@@ -414,7 +414,7 @@
         (mf/use-fn
          (fn [event]
            (dom/prevent-default event)
-           (st/emit! (ptk/event ::ev/event {::ev/name "try-out-cancel"})
+           (st/emit! (ev/event {::ev/name "try-out-cancel"})
                      (modal/hide))
            (when on-close (on-close))))]
 

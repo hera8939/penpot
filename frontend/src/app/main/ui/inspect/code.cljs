@@ -158,10 +158,10 @@
            (let [origin (if (= :workspace from)
                           "workspace"
                           "viewer")]
-             (st/emit! (ptk/event ::ev/event
-                                  {::ev/name "copy-inspect-code"
-                                   ::ev/origin origin
-                                   :type markup-type})))))
+             (st/emit! (ev/event
+                        {::ev/name "copy-inspect-code"
+                         ::ev/origin origin
+                         :type markup-type})))))
 
         on-style-copied
         (mf/use-fn
@@ -170,10 +170,10 @@
            (let [origin (if (= :workspace from)
                           "workspace"
                           "viewer")]
-             (st/emit! (ptk/event ::ev/event
-                                  {::ev/name "copy-inspect-style"
-                                   ::ev/origin origin
-                                   :type style-type})))))
+             (st/emit! (ev/event
+                        {::ev/name "copy-inspect-style"
+                         ::ev/origin origin
+                         :type style-type})))))
 
         {on-markup-pointer-down :on-pointer-down
          on-markup-lost-pointer-capture :on-lost-pointer-capture
@@ -206,10 +206,10 @@
            (let [origin (if (= :workspace from)
                           "workspace"
                           "viewer")]
-             (st/emit! (ptk/event ::ev/event
-                                  {::ev/name "copy-inspect-code"
-                                   ::ev/origin origin
-                                   :type "all"})))))
+             (st/emit! (ev/event
+                        {::ev/name "copy-inspect-code"
+                         ::ev/origin origin
+                         :type "all"})))))
 
         ;;handle-open-review
         ;;(mf/use-fn

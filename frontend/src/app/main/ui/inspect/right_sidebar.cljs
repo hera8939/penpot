@@ -75,7 +75,7 @@
            (when on-change-section
              (on-change-section (keyword new-section))
              (st/emit!
-              (ptk/event ::ev/event {::ev/name "change-inspect-tab" :tab new-section})))))
+              (ev/event {::ev/name "change-inspect-tab" :tab new-section})))))
 
         handle-expand
         (mf/use-fn
@@ -122,7 +122,7 @@
      (mf/deps shapes handle-change-tab)
      (fn []
        (if (seq shapes)
-         (st/emit! (ptk/event ::ev/event {::ev/name "inspect-mode-click-element"}))
+         (st/emit! (ev/event {::ev/name "inspect-mode-click-element"}))
          (handle-change-tab (if (contains? cf/flags :inspect-styles) :styles :info)))))
 
     [:aside {:class (stl/css-case :settings-bar-right true

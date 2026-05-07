@@ -412,7 +412,7 @@
         on-save
         (mf/use-fn
          (fn [theme]
-           (st/emit! (ptk/event ::ev/event {::ev/name "create-tokens-theme"})
+           (st/emit! (ev/event {::ev/name "create-tokens-theme"})
                      (dwtl/create-token-theme theme))))
         has-prev-view (has-prev-view (:prev-type state))]
 

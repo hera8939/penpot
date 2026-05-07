@@ -38,8 +38,7 @@
                          :typography-ref-id (:id typography)}
                         (dissoc typography :id :name))]
 
-             (st/emit! (ptk/event
-                        ::ev/event
+             (st/emit! (ev/event
                         {::ev/name "use-library-typography"
                          ::ev/origin "text-palette"
                          :external-library (not= file-id current-file-id)}))

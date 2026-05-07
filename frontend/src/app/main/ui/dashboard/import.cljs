@@ -171,14 +171,14 @@
          (rx/subs!
           (fn [message]
             (when (some? (:error message))
-              (st/emit! (ptk/data-event ::ev/event {::ev/name "import-files-error"
-                                                    :error (:error message)})))
+              (st/emit! (ev/event {::ev/name "import-files-error"
+                                   :error (:error message)})))
             (swap! state update-with-analyze-result message))))))
 
 (defn- import-files
   [state project-id entries]
-  (st/emit! (ptk/data-event ::ev/event {::ev/name "import-files"
-                                        :num-files (count entries)}))
+  (st/emit! (ev/event {::ev/name "import-files"
+                       :num-files (count entries)}))
 
   (let [features (get @st/state :features)]
     (->> (mw/ask-many!

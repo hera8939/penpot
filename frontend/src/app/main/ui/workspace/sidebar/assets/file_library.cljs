@@ -94,7 +94,7 @@
         (mf/use-fn
          (fn [ev]
            (dom/stop-propagation ev)
-           (st/emit! (ptk/data-event ::ev/event {::ev/name "navigate-to-library-file"}))))]
+           (st/emit! (ev/event {::ev/name "navigate-to-library-file"}))))]
 
     [:div {:class (stl/css-case
                    :library-title true

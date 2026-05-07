@@ -209,8 +209,8 @@
               :aria-label (tr "workspace.toolbar.plugins" (sc/get-tooltip :plugins))
               :class (stl/css :main-toolbar-options-button)
               :on-click #(st/emit!
-                          (ptk/data-event ::ev/event {::ev/name "open-plugins-manager"
-                                                      ::ev/origin "workspace:toolbar"})
+                          (ev/event {::ev/name "open-plugins-manager"
+                                     ::ev/origin "workspace:toolbar"})
                           (modal/show :plugin-management {}))
               :data-tool "plugins"
               :data-testid "plugins-btn"}

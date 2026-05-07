@@ -124,9 +124,9 @@
         go-to-manage-subscription
         (mf/use-fn
          (fn []
-           (st/emit! (ptk/event ::ev/event {::ev/name "open-subscription-management"
-                                            ::ev/origin "dashboard"
-                                            :section "team-settings"}))
+           (st/emit! (ev/event {::ev/name "open-subscription-management"
+                                ::ev/origin "dashboard"
+                                :section "team-settings"}))
            (let [href (-> (rt/get-current-href)
                           (rt/encode-url))
                  href (str "payments/subscriptions/show?returnUrl=" href)]

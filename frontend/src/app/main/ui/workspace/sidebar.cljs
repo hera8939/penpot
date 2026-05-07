@@ -146,7 +146,7 @@
          (fn [id]
            (st/emit! (dcm/go-to-workspace :layout (keyword id)))
            (when (= id "tokens")
-             (st/emit! (ptk/event ::ev/event {::ev/name "open-tokens-tab"})))))
+             (st/emit! (ev/event {::ev/name "open-tokens-tab"})))))
 
         tabs
         (mf/with-memo [mode-inspect? design-tokens?]

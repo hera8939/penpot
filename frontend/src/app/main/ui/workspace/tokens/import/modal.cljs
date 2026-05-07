@@ -35,7 +35,7 @@
   (rx/sub!
    tokens-lib-stream
    (fn [lib]
-     (st/emit! (ptk/data-event ::ev/event {::ev/name "import-tokens" :type type})
+     (st/emit! (ev/event {::ev/name "import-tokens" :type type})
                (dwtl/import-tokens-lib lib))
      (modal/hide!))
    (fn [err]

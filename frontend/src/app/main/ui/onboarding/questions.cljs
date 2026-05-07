@@ -33,7 +33,7 @@
                             (assoc :label label)
                             (assoc :step step)
                             (assoc ::ev/name "onboarding-step"))]
-             (st/emit! (ptk/data-event ::ev/event params))
+             (st/emit! (ev/event params))
              (on-next form event))))]
 
     [:& fm/form {:form form

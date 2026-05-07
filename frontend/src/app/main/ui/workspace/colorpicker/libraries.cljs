@@ -87,8 +87,7 @@
          (mf/deps state selected on-select-color)
          (fn [event]
            (when-not (= :recent selected)
-             (st/emit! (ptk/event
-                        ::ev/event
+             (st/emit! (ev/event
                         {::ev/name "use-library-color"
                          ::ev/origin "colorpicker"
                          :external-library (not= :file selected)})))

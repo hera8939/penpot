@@ -81,8 +81,8 @@
      (mf/deps show?)
      (fn []
        (when show?
-         (st/emit! (ptk/event ::ev/event {::ev/name "open-comment-notifications"
-                                          ::ev/origin "dashboard"})))))
+         (st/emit! (ev/event {::ev/name "open-comment-notifications"
+                              ::ev/origin "dashboard"})))))
 
     [:div {:class (stl/css :dashboard-comments-section)}
      [:& dropdown {:show show? :on-close on-hide-comments :dropdown-id "dashboard-comments"}
