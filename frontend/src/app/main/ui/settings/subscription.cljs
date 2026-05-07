@@ -630,7 +630,7 @@
                          :cta-text-with-icon (tr "subscription.settings.more-information")
                          :cta-link-with-icon go-to-pricing-page}])
 
-       (when (not= subscription-type "unlimited")
+       (when (and (not= subscription-type "unlimited") cf/saas?)
          [:> plan-card* {:card-title (tr "subscription.settings.unlimited")
                          :card-title-icon i/character-u
                          :price-value "$7"
@@ -646,7 +646,7 @@
                          :recommended (= subscription-type "professional")
                          :show-button-cta (= subscription-type "professional")}])
 
-       (when (and (not= subscription-type "enterprise") (not (contains? cf/flags :nitrate)))
+       (when (and (not= subscription-type "enterprise") cf/saas? (not (contains? cf/flags :nitrate)))
          [:> plan-card* {:card-title (tr "subscription.settings.enterprise")
                          :card-title-icon i/character-e
                          :price-value "$950"
